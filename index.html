@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Downloader</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #121212, #1a1a2e);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .container {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 16px;
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(90deg, #8a2be2, #c71585);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .copyright {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        /* Menu 3 garis di pojok kiri atas container */
+        .menu-container {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+        }
+
+        .menu-btn {
+            background: rgba(138, 43, 226, 0.2);
+            border: none;
+            color: #8a2be2;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 10px 12px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-btn:hover {
+            background: rgba(138, 43, 226, 0.4);
+            transform: scale(1.05);
+        }
+
+        .menu-content {
+            display: none;
+            position: absolute;
+            top: 55px;
+            left: 0;
+            background: rgba(42, 42, 42, 0.95);
+            border-radius: 12px;
+            padding: 15px;
+            min-width: 280px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .menu-content.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .menu-item {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-title {
+            color: #8a2be2;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .menu-value {
+            color: #ddd;
+            font-size: 0.85rem;
+        }
+
+        .menu-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 10px 0;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ddd;
+            font-weight: 500;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(42, 42, 42, 0.8);
+            color: white;
+            font-size: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: #8a2be2;
+            box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.3);
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #8a2be2, #c71585);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        .download-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(51, 51, 51, 0.3);
+            border-left: 4px solid #8a2be2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            color: #ddd;
+            margin-top: 10px;
+        }
+
+        .result {
+            display: none;
+            margin-top: 25px;
+            background: rgba(42, 42, 42, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .video-info {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .video-thumb {
+            width: 100%;
+            max-width: 280px;
+            border-radius: 10px;
+            margin: 0 auto 12px;
+            display: block;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .video-title {
+            font-size: 1rem;
+            color: #ddd;
+            line-height: 1.4;
+        }
+
+        .download-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .option-btn {
+            padding: 12px 16px;
+            background: rgba(51, 51, 51, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .option-btn:hover {
+            background: rgba(68, 68, 68, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .hd-btn {
+            background: linear-gradient(90deg, #6a0dad, #8a2be2);
+        }
+
+        .sd-btn {
+            background: linear-gradient(90deg, #8a2be2, #c71585);
+        }
+
+        .mp3-btn {
+            background: linear-gradient(90deg, #c71585, #ff1493);
+        }
+
+        /* User active counter */
+        .user-counter {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(90deg, #8a2be2, #c71585);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .user-counter:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.5);
+        }
+
+        /* Notifikasi popup */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(42, 42, 42, 0.95);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border-left: 4px solid #8a2be2;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            max-width: 300px;
+            transform: translateX(350px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #8a2be2;
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .notification-close {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .notification-close:hover {
+            color: white;
+        }
+
+        /* Animasi untuk counter */
+        @keyframes countUp {
+            from { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            to { transform: scale(1); }
+        }
+
+        .counting {
+            animation: countUp 0.5s ease;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .menu-content {
+                min-width: 250px;
+                left: -10px;
+            }
+            
+            .user-counter {
+                bottom: 10px;
+                right: 10px;
+                font-size: 0.8rem;
+                padding: 10px 15px;
+            }
+            
+            .notification {
+                top: 10px;
+                right: 10px;
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Menu 3 garis di pojok kiri atas -->
+        <div class="menu-container">
+            <button class="menu-btn" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="menu-content" id="menuContent">
+                <div class="menu-item">
+                    <div class="menu-title">Waktu Saat Ini</div>
+                    <div class="menu-value" id="currentTime">Loading...</div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-title">Informasi Developer</div>
+                    <div class="menu-value" id="birthdayInfo">Loading...</div>
+                </div>
+                
+                <div class="menu-divider"></div>
+                
+                <div class="menu-item">
+                    <div class="menu-title">Status Aplikasi</div>
+                    <div class="menu-value" id="appStatus">✅ Online dan Siap</div>
+                </div>
+                
+                <div class="menu-item">
+                    <div class="menu-title">Versi</div>
+                    <div class="menu-value">v2.1.0 - TikTok Downloader</div>
+                </div>
+                
+                <div class="menu-divider"></div>
+                
+                <div class="menu-item">
+                    <div class="menu-title">Fitur Lainnya</div>
+                    <div class="menu-value">
+                        <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 5px;">
+                            <button class="option-btn" style="padding: 8px; font-size: 0.8rem;" onclick="showHistory()">
+                                <i class="fas fa-history"></i> Riwayat Download
+                            </button>
+                            <button class="option-btn" style="padding: 8px; font-size: 0.8rem;" onclick="showSettings()">
+                                <i class="fas fa-cog"></i> Pengaturan
+                            </button>
+                            <button class="option-btn" style="padding: 8px; font-size: 0.8rem;" onclick="showHelp()">
+                                <i class="fas fa-question-circle"></i> Bantuan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="header">
+            <h1>TikTok Downloader</h1>
+            <div class="copyright">Copyright By @Rendzz official</div>
+        </div>
+
+        <div class="input-group">
+            <label for="url">URL TikTok</label>
+            <input 
+                type="text" 
+                id="url" 
+                class="url-input" 
+                placeholder="Tempel URL TikTok"
+            >
+        </div>
+
+        <button id="btn" class="download-btn" onclick="dl()">
+            <i class="fas fa-download"></i>
+            <span>Downloader</span>
+        </button>
+
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Mengunduh video...</p>
+        </div>
+
+        <div id="result" class="result">
+            <div class="video-info">
+                <img id="thumb" class="video-thumb" src="" alt="Video Thumbnail">
+                <p id="title" class="video-title"></p>
+            </div>
+            <div class="download-options">
+                <a id="hd" href="#" class="option-btn hd-btn" target="_blank">
+                    <i class="fas fa-hd-video"></i> Download HD
+                </a>
+                <a id="sd" href="#" class="option-btn sd-btn" target="_blank">
+                    <i class="fas fa-video"></i> Download SD
+                </a>
+                <a id="mp3" href="#" class="option-btn mp3-btn" target="_blank">
+                    <i class="fas fa-music"></i> Download MP3
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Active Counter -->
+    <div class="user-counter">
+        <i class="fas fa-users"></i>
+        <span id="userCount">0</span> User Aktif
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <script>
+        // Fungsi untuk toggle menu
+        function toggleMenu() {
+            const menuContent = document.getElementById('menuContent');
+            menuContent.classList.toggle('show');
+        }
+
+        // Fungsi untuk update waktu
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('id-ID') + '.' + now.getMilliseconds().toString().padStart(3, '0');
+            document.getElementById('currentTime').textContent = timeString;
+        }
+
+        // Fungsi untuk menghitung hari sampai ulang tahun
+        function calculateBirthday() {
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            
+            // Ulang tahun 17 Juli
+            const birthday = new Date(currentYear, 6, 17); // Bulan 6 = Juli (0-based)
+            
+            if (today > birthday) {
+                // Jika ulang tahun sudah lewat tahun ini, hitung untuk tahun depan
+                birthday.setFullYear(currentYear + 1);
+            }
+            
+            const diffTime = birthday - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            return diffDays;
+        }
+
+        // Fungsi untuk update informasi ulang tahun
+        function updateBirthdayInfo() {
+            const daysLeft = calculateBirthday();
+            const today = new Date();
+            const birthdayThisYear = new Date(today.getFullYear(), 6, 17);
+            
+            let message = `Ultah: 17 Juli - ${daysLeft} hari lagi`;
+            
+            // Jika hari ini adalah ulang tahun
+            if (today.getMonth() === 6 && today.getDate() === 17) {
+                message = "🎉 SELAMAT ULANG TAHUN! 🎉";
+            }
+            // Jika besok ulang tahun
+            else if (today.getMonth() === 6 && today.getDate() === 16) {
+                message = "Besok ulang tahun! 🎂";
+            }
+            
+            document.getElementById('birthdayInfo').textContent = message;
+        }
+
+        // Update waktu dan info ulang tahun setiap detik
+        setInterval(() => {
+            updateTime();
+            updateBirthdayInfo();
+        }, 1);
+
+        // Inisialisasi pertama kali
+        updateTime();
+        updateBirthdayInfo();
+
+        // Tutup menu ketika klik di luar
+        document.addEventListener('click', function(event) {
+            const menuContent = document.getElementById('menuContent');
+            const menuBtn = document.querySelector('.menu-btn');
+            
+            if (!menuContent.contains(event.target) && !menuBtn.contains(event.target)) {
+                menuContent.classList.remove('show');
+            }
+        });
+
+        // Fungsi untuk fitur lainnya
+        function showHistory() {
+            showNotification('Riwayat Download', 'Fitur Riwayat Download akan segera hadir!');
+            toggleMenu(); // Tutup menu setelah diklik
+        }
+
+        function showSettings() {
+            showNotification('Pengaturan', 'Fitur Pengaturan akan segera hadir!');
+            toggleMenu();
+        }
+
+        function showHelp() {
+            showNotification('Bantuan', 'Cara menggunakan:\n1. Paste URL TikTok\n2. Klik Download\n3. Pilih kualitas video atau MP3');
+            toggleMenu();
+        }
+
+        // Fungsi download TikTok
+        async function dl() {
+            const url = document.getElementById('url').value.trim();
+            if (!url) return showNotification('Error', 'Masukkan link TikTok!');
+
+            const btn = document.getElementById('btn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+
+            btn.disabled = true;
+            loading.style.display = 'block';
+            result.style.display = 'none';
+
+            try {
+                const api = `https://api.nvidiabotz.xyz/download/tiktok?url=${encodeURIComponent(url)}`;
+                const res = await fetch(api);
+                const json = await res.json();
+
+                if (!json.status) throw new Error(json.message || 'Gagal');
+
+                const { video_hd, video_sd, mp3, thumbnail, title } = json.result;
+
+                // Auto-download HD
+                const a = document.createElement('a');
+                a.href = video_hd;
+                a.download = 'tiktok-hd.mp4';
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                // Tampilkan hasil lengkap
+                document.getElementById('thumb').src = thumbnail;
+                document.getElementById('title').textContent = title;
+                document.getElementById('hd').href = video_hd;
+                document.getElementById('sd').href = video_sd;
+                document.getElementById('mp3').href = mp3;
+                result.style.display = 'block';
+                
+                showNotification('Berhasil', 'Video berhasil diunduh!');
+            } catch (e) {
+                showNotification('Error', e.message || 'Server error');
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        // Enter key support
+        document.getElementById('url').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                dl();
+            }
+        });
+
+        // User Active Counter Logic
+        function initializeUserCounter() {
+            // Ambil nilai dari localStorage atau set ke 0 jika belum ada
+            let userCount = parseInt(localStorage.getItem('userCount')) || 0;
+            
+            // Update tampilan
+            document.getElementById('userCount').textContent = userCount;
+            
+            // Set interval untuk menambah user setiap 15 detik
+            setInterval(() => {
+                // Tambah 10 user tapi naik satu per satu dengan animasi
+                const targetCount = userCount + 10;
+                
+                // Fungsi untuk menaikkan counter satu per satu
+                function incrementCounter() {
+                    if (userCount < targetCount) {
+                        userCount++;
+                        localStorage.setItem('userCount', userCount);
+                        
+                        // Update tampilan dengan animasi
+                        const userCountElement = document.getElementById('userCount');
+                        userCountElement.textContent = userCount;
+                        userCountElement.classList.add('counting');
+                        
+                        setTimeout(() => {
+                            userCountElement.classList.remove('counting');
+                        }, 500);
+                        
+                        // Tampilkan notifikasi setiap 100 user
+                        if (userCount % 100 === 0) {
+                            showNotification('Pengguna Aktif', `Telah mencapai ${userCount} pengguna aktif!`);
+                        }
+                        
+                        // Panggil lagi setelah delay
+                        setTimeout(incrementCounter, 150); // 150ms delay antara setiap kenaikan
+                    }
+                }
+                
+                // Mulai increment
+                incrementCounter();
+            }, 15000); // 15 detik
+        }
+
+        // Fungsi untuk menampilkan notifikasi
+        function showNotification(title, message) {
+            const notificationContainer = document.getElementById('notificationContainer');
+            
+            // Buat elemen notifikasi
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = `
+                <button class="notification-close" onclick="this.parentElement.remove()">&times;</button>
+                <div class="notification-title">${title}</div>
+                <div class="notification-message">${message}</div>
+            `;
+            
+            // Tambahkan ke container
+            notificationContainer.appendChild(notification);
+            
+            // Tampilkan notifikasi
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Hapus notifikasi setelah 5 detik
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 400);
+            }, 5000);
+        }
+
+        // Inisialisasi user counter saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', initializeUserCounter);
+    </script>
+</body>
+</html>
