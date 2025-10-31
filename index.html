@@ -1,873 +1,433 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikTok Downloader - rendzz</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #ff0050;
-            --secondary: #00f2ea;
-            --gold: #FFD700;
-            --vip: #C0C0C0;
-            --dark-bg: #121212;
-            --dark-card: #1e1e1e;
-            --dark-text: #ffffff;
-            --dark-border: #333333;
-            --light-bg: #f5f5f5;
-            --light-card: #ffffff;
-            --light-text: #333333;
-            --light-border: #dddddd;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--dark-bg);
-            color: var(--dark-text);
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        body.light-mode {
-            background-color: var(--light-bg);
-            color: var(--light-text);
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--dark-border);
-            margin-bottom: 20px;
-        }
-
-        body.light-mode header {
-            border-bottom-color: var(--light-border);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo i {
-            font-size: 24px;
-            color: var(--primary);
-        }
-
-        .logo h1 {
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .copyright {
-            font-size: 12px;
-            background: linear-gradient(45deg, var(--gold), var(--vip));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: bold;
-        }
-
-        .menu-container {
-            position: relative;
-        }
-
-        .menu-btn {
-            background: none;
-            border: none;
-            color: var(--dark-text);
-            font-size: 18px;
-            cursor: pointer;
-            padding: 5px;
-        }
-
-        body.light-mode .menu-btn {
-            color: var(--light-text);
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            right: 0;
-            top: 100%;
-            background-color: var(--dark-card);
-            border: 1px solid var(--dark-border);
-            border-radius: 8px;
-            padding: 10px;
-            width: 280px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            display: none;
-            z-index: 100;
-        }
-
-        body.light-mode .dropdown-menu {
-            background-color: var(--light-card);
-            border-color: var(--light-border);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .dropdown-menu.show {
-            display: block;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .menu-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        body.light-mode .menu-item:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .profile-section {
-            padding: 15px;
-            border-bottom: 1px solid var(--dark-border);
-            margin-bottom: 10px;
-        }
-
-        body.light-mode .profile-section {
-            border-bottom-color: var(--light-border);
-        }
-
-        .profile-name {
-            font-weight: bold;
-            font-size: 18px;
-            margin-bottom: 5px;
-            color: var(--gold);
-        }
-
-        .profile-detail {
-            font-size: 14px;
-            margin-bottom: 3px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .profile-detail .value {
-            font-weight: bold;
-        }
-
-        .countdown {
-            color: var(--primary);
-            font-weight: bold;
-        }
-
-        .version {
-            background: linear-gradient(45deg, var(--gold), var(--vip));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: bold;
-        }
-
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            font-size: 14px;
-            opacity: 0.8;
-        }
-
-        .card {
-            background-color: var(--dark-card);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            margin-bottom: 20px;
-        }
-
-        body.light-mode .card {
-            background-color: var(--light-card);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .url-input {
-            flex: 1;
-            padding: 12px 15px;
-            border: 1px solid var(--dark-border);
-            border-radius: 8px;
-            background-color: var(--dark-bg);
-            color: var(--dark-text);
-            font-size: 16px;
-        }
-
-        body.light-mode .url-input {
-            background-color: var(--light-bg);
-            color: var(--light-text);
-            border-color: var(--light-border);
-        }
-
-        .download-btn {
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 20px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, opacity 0.2s;
-        }
-
-        .download-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .download-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--primary);
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
-        }
-
-        body.light-mode .spinner {
-            border-color: rgba(0, 0, 0, 0.1);
-            border-top-color: var(--primary);
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .result {
-            display: none;
-            margin-top: 20px;
-        }
-
-        .video-info {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .thumbnail {
-            width: 120px;
-            height: 160px;
-            border-radius: 8px;
-            object-fit: cover;
-            background-color: var(--dark-border);
-        }
-
-        body.light-mode .thumbnail {
-            background-color: var(--light-border);
-        }
-
-        .video-details {
-            flex: 1;
-        }
-
-        .video-title {
-            font-size: 16px;
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-
-        .download-options {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .download-option {
-            flex: 1;
-            min-width: 120px;
-            background-color: var(--dark-bg);
-            border: 1px solid var(--dark-border);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-            text-decoration: none;
-            color: var(--dark-text);
-            transition: transform 0.2s, background-color 0.2s;
-        }
-
-        body.light-mode .download-option {
-            background-color: var(--light-bg);
-            border-color: var(--light-border);
-            color: var(--light-text);
-        }
-
-        .download-option:hover {
-            transform: translateY(-2px);
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        body.light-mode .download-option:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .option-icon {
-            font-size: 24px;
-            margin-bottom: 5px;
-            display: block;
-        }
-
-        .hd { color: #4CAF50; }
-        .sd { color: #FF9800; }
-        .mp3 { color: #2196F3; }
-
-        .notification-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-
-        .notification {
-            background-color: var(--dark-card);
-            border-left: 4px solid var(--primary);
-            border-radius: 4px;
-            padding: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            max-width: 350px;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-        }
-
-        body.light-mode .notification {
-            background-color: var(--light-card);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification.success {
-            border-left-color: #4CAF50;
-        }
-
-        .notification.error {
-            border-left-color: #f44336;
-        }
-
-        .notification-icon {
-            font-size: 20px;
-        }
-
-        .notification.success .notification-icon {
-            color: #4CAF50;
-        }
-
-        .notification.error .notification-icon {
-            color: #f44336;
-        }
-
-        .notification-content h4 {
-            margin-bottom: 5px;
-            font-size: 16px;
-        }
-
-        .notification-content p {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-
-        .theme-toggle {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 24px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 24px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: var(--primary);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-
-        .history-section {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 10px;
-        }
-
-        .history-item {
-            padding: 8px;
-            border-bottom: 1px solid var(--dark-border);
-            font-size: 14px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        body.light-mode .history-item {
-            border-bottom-color: var(--light-border);
-        }
-
-        .history-url {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 70%;
-        }
-
-        .history-date {
-            opacity: 0.7;
-            font-size: 12px;
-        }
-
-        @media (max-width: 600px) {
-            .input-group {
-                flex-direction: column;
-            }
-            
-            .video-info {
-                flex-direction: column;
-            }
-            
-            .thumbnail {
-                width: 100%;
-                height: 200px;
-            }
-            
-            .dropdown-menu {
-                width: 250px;
-                right: -10px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TikTok Saver No ADS by Rendzzofficll</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background: #0f0f14;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 25px;
+      transition: 0.3s ease-in-out;
+      position: relative;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    /* ===== Video Background ===== */
+    .bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      pointer-events: none;
+      filter: brightness(0.4);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 24px;
+      padding: 30px 25px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
+      margin-top: 40px;
+      margin-bottom: 100px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .header h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #ff7eff, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .copyright {
+      font-size: 0.9rem;
+      color: #ffffffc9;
+      margin-top: 6px;
+      font-weight: 500;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+    }
+
+    .input-group {
+      margin-bottom: 18px;
+    }
+
+    .url-input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      transition: 0.2s ease;
+    }
+
+    .url-input::placeholder {
+      color: #bfbfbf;
+    }
+
+    .url-input:focus {
+      border-color: #a855f7;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+    }
+
+    .download-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #8a2be2, #ff69b4);
+      color: white;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.25s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .download-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 4px 20px rgba(255, 105, 180, 0.4);
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin: 15px 0;
+    }
+
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-left: 3px solid #a855f7;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .result {
+      display: none;
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 18px;
+    }
+
+    .video-thumb {
+      width: 100%;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .video-title {
+      text-align: center;
+      font-size: 1rem;
+      color: #fff;
+      margin-bottom: 15px;
+    }
+
+    .download-options a {
+      display: block;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      text-decoration: none;
+      color: white;
+      text-align: center;
+      font-weight: 500;
+      transition: 0.2s ease-in-out;
+    }
+
+    .hd-btn { background: linear-gradient(90deg, #a855f7, #6d28d9); }
+    .sd-btn { background: linear-gradient(90deg, #8b5cf6, #ec4899); }
+    .mp3-btn { background: linear-gradient(90deg, #ec4899, #f43f5e); }
+
+    .download-options a:hover {
+      transform: scale(1.02);
+    }
+
+    /* Notifikasi */
+    .notif-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .notif-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .notif-content {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px 30px;
+      text-align: center;
+      max-width: 90%;
+      width: 400px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      transform: scale(0.8);
+      transition: transform 0.4s ease;
+    }
+
+    .notif-overlay.show .notif-content {
+      transform: scale(1);
+    }
+
+    .notif-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .warning-icon { color: #ffcc00; }
+    .error-icon { color: #ff3333; }
+    .success-icon { color: #00cc66; }
+    .info-icon { color: #3399ff; }
+
+    .notif-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      background: linear-gradient(90deg, #ff7eff, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .notif-message {
+      font-size: 1.1rem;
+      line-height: 1.5;
+      margin-bottom: 25px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .notif-btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #8a2be2, #ff69b4);
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.25s ease-in-out;
+    }
+
+    .notif-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 20px rgba(255, 105, 180, 0.4);
+    }
+
+    /* Tombol ke atas */
+    .scroll-top {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #8a2be2, #ff69b4);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      display: none;
+      z-index: 999;
+    }
+
+    .scroll-top.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">
-                <i class="fab fa-tiktok"></i>
-                <h1>TikTok Downloader</h1>
-            </div>
-            <div class="copyright">Copyright by rendzz</div>
-            <div class="menu-container">
-                <button class="menu-btn" id="menuBtn">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="dropdown-menu" id="dropdownMenu">
-                    <div class="profile-section">
-                        <div class="profile-name">rendzz official!</div>
-                        <div class="profile-detail">
-                            <span>Umur:</span>
-                            <span class="value">17 tahun</span>
-                        </div>
-                        <div class="profile-detail">
-                            <span>Ulang Tahun:</span>
-                            <span class="value">17 Juli</span>
-                        </div>
-                        <div class="profile-detail">
-                            <span>Menuju Ulang Tahun:</span>
-                            <span class="value countdown" id="birthdayCountdown">0 hari</span>
-                        </div>
-                        <div class="profile-detail">
-                            <span>Developer:</span>
-                            <span class="value">WEB INI</span>
-                        </div>
-                        <div class="profile-detail">
-                            <span>Versi:</span>
-                            <span class="value version">3.1 [BETA]</span>
-                        </div>
-                    </div>
-                    <div class="menu-item" id="historyBtn">
-                        <i class="fas fa-history"></i>
-                        <span>Riwayat Download</span>
-                    </div>
-                    <div class="menu-item theme-toggle">
-                        <i class="fas fa-moon"></i>
-                        <span>Mode Gelap</span>
-                        <label class="switch">
-                            <input type="checkbox" id="themeToggle" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </header>
 
-        <div class="stats">
-            <div class="time" id="currentTime">00:00:00</div>
-        </div>
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="https://files.catbox.moe/crzz3c.mp4" type="video/mp4">
+  </video>
 
-        <div class="card">
-            <h2>Unduh Video TikTok</h2>
-            <p>Masukkan link TikTok di bawah ini untuk mengunduh video</p>
-            
-            <div class="input-group">
-                <input type="text" class="url-input" id="url" placeholder="https://www.tiktok.com/@user/video/123456789" autocomplete="off">
-                <button class="download-btn" id="btn" onclick="dl()">
-                    <i class="fas fa-download"></i> Download
-                </button>
-            </div>
+  <div class="notif-overlay" id="notif">
+    <div class="notif-content">
+      <i class="notif-icon warning-icon fas fa-exclamation-triangle"></i>
+      <h2 class="notif-title">Peringatan</h2>
+      <p class="notif-message" id="notif-message">Harap masukkan URL TikTok terlebih dahulu!</p>
+      <button class="notif-btn" id="notif-close">Mengerti</button>
+    </div>
+  </div>
 
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>Mengunduh video TikTok...</p>
-            </div>
-
-            <div class="result" id="result">
-                <div class="video-info">
-                    <img class="thumbnail" id="thumb" src="" alt="Thumbnail">
-                    <div class="video-details">
-                        <h3 class="video-title" id="title">Judul Video</h3>
-                        <div class="download-options">
-                            <a href="#" class="download-option" id="hd">
-                                <i class="fas fa-download option-icon hd"></i>
-                                <span>HD Video</span>
-                            </a>
-                            <a href="#" class="download-option" id="sd">
-                                <i class="fas fa-download option-icon sd"></i>
-                                <span>SD Video</span>
-                            </a>
-                            <a href="#" class="download-option" id="mp3">
-                                <i class="fas fa-download option-icon mp3"></i>
-                                <span>MP3 Audio</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- History Modal -->
-        <div class="card" id="historyCard" style="display: none;">
-            <h2>Riwayat Download</h2>
-            <div class="history-section" id="historyList">
-                <!-- History items will be added here dynamically -->
-            </div>
-        </div>
+  <div class="container">
+    <div class="header">
+      <h1>TikTok Downloader</h1>
+      <div class="copyright">© Rendzz Official</div>
     </div>
 
-    <div class="notification-container" id="notificationContainer"></div>
+    <div class="input-group">
+      <input id="url" class="url-input" placeholder="Tempel URL TikTok di sini...">
+    </div>
 
-    <script>
-        // DOM Elements
-        const menuBtn = document.getElementById('menuBtn');
-        const dropdownMenu = document.getElementById('dropdownMenu');
-        const themeToggle = document.getElementById('themeToggle');
-        const currentTime = document.getElementById('currentTime');
-        const birthdayCountdown = document.getElementById('birthdayCountdown');
-        const urlInput = document.getElementById('url');
-        const btn = document.getElementById('btn');
-        const loading = document.getElementById('loading');
-        const result = document.getElementById('result');
-        const thumb = document.getElementById('thumb');
-        const title = document.getElementById('title');
-        const hdLink = document.getElementById('hd');
-        const sdLink = document.getElementById('sd');
-        const mp3Link = document.getElementById('mp3');
-        const notificationContainer = document.getElementById('notificationContainer');
-        const historyBtn = document.getElementById('historyBtn');
-        const historyCard = document.getElementById('historyCard');
-        const historyList = document.getElementById('historyList');
+    <button id="btn" class="download-btn" onclick="dl()">
+      <i class="fas fa-download"></i> Unduh Sekarang
+    </button>
 
-        // Variables
-        let downloadHistory = [];
+    <div id="loading" class="loading">
+      <div class="loading-spinner"></div>
+      <p>Mengunduh video...</p>
+    </div>
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            updateTime();
-            setInterval(updateTime, 1000);
-            
-            updateBirthdayCountdown();
-            setInterval(updateBirthdayCountdown, 86400000); // Update once a day
-            
-            // Load download history from localStorage
-            const savedHistory = localStorage.getItem('tiktokDownloaderHistory');
-            if (savedHistory) {
-                downloadHistory = JSON.parse(savedHistory);
-            }
-            
-            // Check for saved theme preference
-            const savedTheme = localStorage.getItem('tiktokDownloaderTheme');
-            if (savedTheme === 'light') {
-                document.body.classList.add('light-mode');
-                themeToggle.checked = false;
-            }
-        });
+    <div id="result" class="result">
+      <img id="thumb" class="video-thumb" src="">
+      <p id="title" class="video-title"></p>
+      <div class="download-options">
+        <a id="hd" href="#" target="_blank" class="hd-btn"><i class="fas fa-video"></i> Download HD</a>
+        <a id="sd" href="#" target="_blank" class="sd-btn"><i class="fas fa-play-circle"></i> Download SD</a>
+        <a id="mp3" href="#" target="_blank" class="mp3-btn"><i class="fas fa-music"></i> Download MP3</a>
+      </div>
+    </div>
+  </div>
 
-        // Update current time
-        function updateTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('id-ID', { hour12: false });
-            currentTime.textContent = timeString;
-        }
+  <button class="scroll-top" id="scrollTop"><i class="fas fa-arrow-up"></i></button>
 
-        // Update birthday countdown
-        function updateBirthdayCountdown() {
-            const today = new Date();
-            const currentYear = today.getFullYear();
-            
-            // Set birthday to July 17th
-            let birthday = new Date(currentYear, 6, 17); // Month is 0-indexed (6 = July)
-            
-            // If birthday has passed this year, set to next year
-            if (today > birthday) {
-                birthday.setFullYear(currentYear + 1);
-            }
-            
-            // Calculate days until birthday
-            const diffTime = birthday - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            birthdayCountdown.textContent = `${diffDays} hari`;
-        }
+  <script>
+    const notif = document.getElementById('notif');
+    const notifMessage = document.getElementById('notif-message');
+    const notifIcon = document.querySelector('.notif-icon');
+    const notifTitle = document.querySelector('.notif-title');
+    const scrollTopBtn = document.getElementById('scrollTop');
 
-        // Toggle dropdown menu
-        menuBtn.addEventListener('click', function() {
-            dropdownMenu.classList.toggle('show');
-        });
+    function showNotif(type, message) {
+      switch(type) {
+        case 'warning':
+          notifIcon.className = 'notif-icon warning-icon fas fa-exclamation-triangle';
+          notifTitle.textContent = 'Peringatan';
+          break;
+        case 'error':
+          notifIcon.className = 'notif-icon error-icon fas fa-times-circle';
+          notifTitle.textContent = 'Kesalahan';
+          break;
+        case 'success':
+          notifIcon.className = 'notif-icon success-icon fas fa-check-circle';
+          notifTitle.textContent = 'Berhasil';
+          break;
+        case 'info':
+          notifIcon.className = 'notif-icon info-icon fas fa-info-circle';
+          notifTitle.textContent = 'Informasi';
+          break;
+      }
+      notifMessage.textContent = message;
+      notif.classList.add('show');
+    }
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            if (!menuBtn.contains(event.target) && !dropdownMenu.contains(event.target)) {
-                dropdownMenu.classList.remove('show');
-            }
-        });
+    function hideNotif() { notif.classList.remove('show'); }
 
-        // Toggle history view
-        historyBtn.addEventListener('click', function() {
-            historyCard.style.display = historyCard.style.display === 'none' ? 'block' : 'none';
-            renderHistory();
-            dropdownMenu.classList.remove('show');
-        });
+    document.getElementById('notif-close').addEventListener('click', hideNotif);
+    notif.addEventListener('click', (e) => { if (e.target === notif) hideNotif(); });
 
-        // Render download history
-        function renderHistory() {
-            historyList.innerHTML = '';
-            
-            if (downloadHistory.length === 0) {
-                historyList.innerHTML = '<div class="history-item">Belum ada riwayat download</div>';
-                return;
-            }
-            
-            // Show latest 10 downloads
-            const recentHistory = downloadHistory.slice(-10).reverse();
-            
-            recentHistory.forEach(item => {
-                const historyItem = document.createElement('div');
-                historyItem.className = 'history-item';
-                historyItem.innerHTML = `
-                    <div class="history-url">${item.url}</div>
-                    <div class="history-date">${item.date}</div>
-                `;
-                historyList.appendChild(historyItem);
-            });
-        }
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 200) scrollTopBtn.classList.add('show');
+      else scrollTopBtn.classList.remove('show');
+    });
 
-        // Add to download history
-        function addToHistory(url) {
-            const now = new Date();
-            const dateString = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
-            
-            downloadHistory.push({
-                url: url,
-                date: dateString
-            });
-            
-            // Keep only the last 50 items
-            if (downloadHistory.length > 50) {
-                downloadHistory = downloadHistory.slice(-50);
-            }
-            
-            // Save to localStorage
-            localStorage.setItem('tiktokDownloaderHistory', JSON.stringify(downloadHistory));
-        }
+    scrollTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 
-        // Theme toggle
-        themeToggle.addEventListener('change', function() {
-            if (this.checked) {
-                document.body.classList.remove('light-mode');
-                localStorage.setItem('tiktokDownloaderTheme', 'dark');
-            } else {
-                document.body.classList.add('light-mode');
-                localStorage.setItem('tiktokDownloaderTheme', 'light');
-            }
-        });
+    async function dl() {
+      const url = document.getElementById('url').value.trim();
+      if (!url) {
+        showNotif('warning', 'Harap masukkan URL TikTok terlebih dahulu!');
+        return;
+      }
 
-        // Show notification
-        function showNotification(title, message, type = 'success') {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <div class="notification-icon">
-                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-                </div>
-                <div class="notification-content">
-                    <h4>${title}</h4>
-                    <p>${message}</p>
-                </div>
-            `;
-            
-            notificationContainer.appendChild(notification);
-            
-            // Show notification with animation
-            setTimeout(() => {
-                notification.classList.add('show');
-            }, 10);
-            
-            // Remove notification after 5 seconds
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => {
-                    notificationContainer.removeChild(notification);
-                }, 300);
-            }, 5000);
-        }
+      const btn = document.getElementById('btn');
+      const loading = document.getElementById('loading');
+      const result = document.getElementById('result');
 
-        // Download function
-        async function dl() {
-            const url = urlInput.value.trim();
-            if (!url) return showNotification('Error', 'Masukkan link TikTok!', 'error');
+      btn.disabled = true;
+      loading.style.display = 'block';
+      result.style.display = 'none';
 
-            btn.disabled = true;
-            loading.style.display = 'block';
-            result.style.display = 'none';
+      try {
+        const api = `https://api.nvidiabotz.xyz/download/tiktok?url=${encodeURIComponent(url)}`;
+        const res = await fetch(api);
+        const json = await res.json();
 
-            try {
-                // Simulate API call with mock data
-                // In a real implementation, you would use the actual API
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                // Mock response data
-                const mockResponse = {
-                    status: true,
-                    result: {
-                        video_hd: 'https://example.com/video-hd.mp4',
-                        video_sd: 'https://example.com/video-sd.mp4',
-                        mp3: 'https://example.com/audio.mp3',
-                        thumbnail: 'https://p16-sign-va.tiktokcdn.com/obj/tos-maliva-p-0068/05f5e8b6d3c44c3a8f0e8e5e5c5f5b5e?x-expires=1234567890&x-signature=abc123def456',
-                        title: 'Contoh Video TikTok - Ini adalah judul video yang panjang sekali sampai perlu dipotong'
-                    }
-                };
+        if (!json.status) throw new Error(json.message || 'Gagal mengambil data.');
 
-                if (!mockResponse.status) throw new Error('Gagal mengambil data video');
+        const { video_hd, video_sd, mp3, thumbnail, title } = json.result;
+        document.getElementById('thumb').src = thumbnail;
+        document.getElementById('title').textContent = title;
+        document.getElementById('hd').href = video_hd;
+        document.getElementById('sd').href = video_sd;
+        document.getElementById('mp3').href = mp3;
+        result.style.display = 'block';
+        showNotif('success', 'Video TikTok berhasil diunduh! Silakan pilih kualitas yang diinginkan.');
 
-                const { video_hd, video_sd, mp3, thumbnail, title: videoTitle } = mockResponse.result;
+        setTimeout(() => {
+          result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 400);
+      } catch (e) {
+        showNotif('error', 'Terjadi kesalahan saat mengunduh video. Pastikan URL TikTok valid.');
+      } finally {
+        btn.disabled = false;
+        loading.style.display = 'none';
+      }
+    }
 
-                // Add to download history
-                addToHistory(url);
-
-                // Auto-download HD (simulated)
-                showNotification('Info', 'Video HD sedang diunduh...', 'success');
-
-                // Display results
-                thumb.src = thumbnail;
-                title.textContent = videoTitle;
-                hdLink.href = video_hd;
-                sdLink.href = video_sd;
-                mp3Link.href = mp3;
-                result.style.display = 'block';
-                
-                showNotification('Berhasil', 'Video berhasil diunduh!', 'success');
-            } catch (e) {
-                showNotification('Error', e.message || 'Server error', 'error');
-            } finally {
-                btn.disabled = false;
-                loading.style.display = 'none';
-            }
-        }
-
-        // Enter key support
-        urlInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                dl();
-            }
-        });
-
-        // Prevent default behavior for download links (since we're using mock URLs)
-        hdLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            showNotification('Info', 'Download HD Video dimulai...', 'success');
-        });
-
-        sdLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            showNotification('Info', 'Download SD Video dimulai...', 'success');
-        });
-
-        mp3Link.addEventListener('click', function(e) {
-            e.preventDefault();
-            showNotification('Info', 'Download MP3 Audio dimulai...', 'success');
-        });
-    </script>
+    document.getElementById('url').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') dl();
+    });
+  </script>
 </body>
 </html>
