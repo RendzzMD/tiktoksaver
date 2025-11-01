@@ -19,9 +19,55 @@
       border-radius: 8px;
       cursor: pointer;
       font-size: 16px;
+      transition: all 0.3s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     }
     .open { background: #4CAF50; color: white; }
     .maintenance { background: #f44336; color: white; }
+    .refresh { background: #2196F3; color: white; }
+    .status-box {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      padding: 15px;
+      border-radius: 12px;
+      display: inline-block;
+      min-width: 300px;
+    }
+    .status-open { background: #4CAF50; }
+    .status-maintenance { background: #f44336; }
+    .last-updated {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 8px;
+      background: #333;
+      color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.3s;
+    }
+    .notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .notification.success { background: #4CAF50; }
+    .notification.error { background: #f44336; }
+    .notification.info { background: #2196F3; }
   </style>
 </head>
 <body>
@@ -29,23 +75,135 @@
   <p>Ubah status website:</p>
   <button class="open" onclick="updateStatus('open')">Buka Website</button>
   <button class="maintenance" onclick="updateStatus('maintenance')">Tutup (Maintenance)</button>
+  <button class="refresh" onclick="fetchStatus()">Refresh Status</button>
+
+  <div id="current-status" class="status-box"></div>
+  <div id="last-updated" class="last-updated"></div>
+
+  <div id="notification" class="notification"></div>
 
   <script>
+    // ===== Simulasi login admin =====
     if (!localStorage.getItem('admin')) {
       window.location.href = 'login.html';
     }
 
-    async function updateStatus(status) {
-      const message = status === 'open'
-        ? 'Website aktif 🚀'
-        : 'Website sedang diperbaiki, mohon tunggu ya!';
-      
-      const config = { status, message };
+    // ===== URL untuk config.json =====
+    const CONFIG_URL = 'config.json';
 
-      // Simpan ke config.json (Vercel / GitHub butuh API / server-side untuk ini)
-      console.log(config);
-      alert(`Status diubah ke: ${status}`);
+    // ===== Notifikasi =====
+    function showNotification(message, type = 'info') {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.className = `notification ${type}`;
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
     }
+
+    // ===== Ambil status dari config.json =====
+    async function fetchStatus() {
+      try {
+        document.body.classList.add('loading');
+        const response = await fetch(`${CONFIG_URL}?t=${new Date().getTime()}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const config = await response.json();
+        renderStatus(config);
+        showNotification('Status berhasil diperbarui', 'success');
+      } catch (error) {
+        console.error('Error fetching status:', error);
+        showNotification('Gagal memuat status: ' + error.message, 'error');
+        
+        // Fallback ke localStorage jika fetch gagal
+        const fallbackStatus = JSON.parse(localStorage.getItem('siteStatus') || '{"status":"open","message":"Website aktif 🚀"}');
+        renderStatus(fallbackStatus);
+      } finally {
+        document.body.classList.remove('loading');
+      }
+    }
+
+    function renderStatus(config) {
+      const box = document.getElementById('current-status');
+      box.textContent = `Status Saat Ini: ${config.status.toUpperCase()} - ${config.message}`;
+      box.className = `status-box ${config.status === 'open' ? 'status-open' : 'status-maintenance'}`;
+      
+      // Tampilkan waktu terakhir update
+      const lastUpdated = document.getElementById('last-updated');
+      lastUpdated.textContent = `Terakhir diperbarui: ${new Date().toLocaleString()}`;
+    }
+
+    // ===== Update status =====
+    async function updateStatus(status) {
+      try {
+        document.body.classList.add('loading');
+        
+        const message = status === 'open'
+          ? 'Website aktif 🚀'
+          : 'Website sedang diperbaiki, mohon tunggu ya!';
+        
+        const config = { status, message };
+        
+        // Simpan ke localStorage sebagai fallback
+        localStorage.setItem('siteStatus', JSON.stringify(config));
+        
+        // Kirim update ke server (simulasi)
+        // Di implementasi nyata, ini akan mengirim request ke API
+        const response = await fetch('/api/update-status', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(config)
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        // Refresh status setelah update
+        await fetchStatus();
+        showNotification(`Status diubah ke: ${status.toUpperCase()}`, 'success');
+      } catch (error) {
+        console.error('Error updating status:', error);
+        showNotification('Gagal memperbarui status: ' + error.message, 'error');
+        
+        // Tetap render status dari localStorage jika update gagal
+        const fallbackStatus = JSON.parse(localStorage.getItem('siteStatus'));
+        renderStatus(fallbackStatus);
+      } finally {
+        document.body.classList.remove('loading');
+      }
+    }
+
+    // ===== Cek maintenance untuk dashboard =====
+    function checkAdminStatus() {
+      const data = JSON.parse(localStorage.getItem('siteStatus') || '{"status":"open"}');
+      if (data.status === 'maintenance') {
+        document.body.innerHTML = `
+          <div style="text-align:center;padding:50px;color:white;font-family:sans-serif;background:#0f0f14;min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+            <h1>🚧 Website Sedang Maintenance</h1>
+            <p>${data.message}</p>
+          </div>`;
+      }
+    }
+
+    // ===== Auto refresh status setiap 30 detik =====
+    function startAutoRefresh() {
+      setInterval(fetchStatus, 30000); // Refresh setiap 30 detik
+    }
+
+    // ===== Inisialisasi =====
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchStatus();
+      checkAdminStatus();
+      startAutoRefresh();
+    });
   </script>
 </body>
 </html>
