@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Admin</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .box {
+      background: #222;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: none;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      background: #4CAF50;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Login Admin</h2>
+    <input type="password" id="password" placeholder="Masukkan password">
+    <button onclick="login()">Masuk</button>
+  </div>
+
+  <script>
+    function login() {
+      const pass = document.getElementById('password').value;
+      if (pass === 'admin123') { // ubah ini sesuai keinginan
+        localStorage.setItem('admin', 'true');
+        window.location.href = 'dashboard.html';
+      } else {
+        alert('Password salah!');
+      }
+    }
+  </script>
+</body>
+</html>
