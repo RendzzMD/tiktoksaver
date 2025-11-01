@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RNMD Admin Dashboard</title>
+  <style>
+    body {
+      background: #0d0d10;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .box {
+      background: rgba(255,255,255,0.08);
+      padding: 25px;
+      border-radius: 14px;
+      width: 330px;
+      box-shadow: 0 0 15px rgba(255,255,255,0.05);
+    }
+    input, textarea {
+      width: 90%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      background: #1c1c22;
+      color: #fff;
+    }
+    button {
+      margin: 6px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      background: linear-gradient(135deg,#8a2be2,#ff69b4);
+      color: #fff;
+      transition: 0.2s;
+    }
+    button:hover { transform: scale(1.05); }
+    .off { background: linear-gradient(135deg,#ff4141,#b80f0f); }
+  </style>
+</head>
+<body>
+
+  <h2>RNMD Admin Dashboard 🔐</h2>
+
+  <!-- Login -->
+  <div class="box" id="loginBox">
+    <input type="password" id="pass" placeholder="Masukkan password admin">
+    <button onclick="login()">Login</button>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="box" id="dashboardBox" style="display:none;">
+    <h3>Status Website 🌍</h3>
+    <button onclick="setStatus('open')">Buka Web</button>
+    <button onclick="setStatus('maintenance')" class="off">Maintenance</button>
+
+    <h4>Pesan Global</h4>
+    <textarea id="message" placeholder="Masukkan pesan...">Website aktif 🚀</textarea>
+    <button onclick="saveMessage()">Simpan Pesan</button>
+
+    <br><br>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    const PASSWORD = "rnmdadmin"; // ubah password lo
+    const CONFIG_PATH = "config.json"; // file config di folder ini
+
+    // === Login ===
+    function login() {
+      const pass = document.getElementById("pass").value;
+      if (pass === PASSWORD) {
+        localStorage.setItem("admin_login", "true");
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("dashboardBox").style.display = "block";
+      } else {
+        alert("Password salah!");
+      }
+    }
+
+    // === Logout ===
+    function logout() {
+      localStorage.removeItem("admin_login");
+      document.getElementById("dashboardBox").style.display = "none";
+      document.getElementById("loginBox").style.display = "block";
+    }
+
+    // === Auto Login Check ===
+    if (localStorage.getItem("admin_login") === "true") {
+      document.getElementById("loginBox").style.display = "none";
+      document.getElementById("dashboardBox").style.display = "block";
+    }
+
+    // === Update Status (Simulasi) ===
+    function setStatus(status) {
+      const msg = document.getElementById("message").value;
+      alert(`Status diubah jadi "${status}"\nPesan: "${msg}"\n\nKalau udah dihubungin ke API, ini bakal update config.json otomatis.`);
+    }
+
+    function saveMessage() {
+      const msg = document.getElementById("message").value;
+      alert("Pesan disimpan: " + msg);
+    }
+  </script>
+
+</body>
+    </html>
