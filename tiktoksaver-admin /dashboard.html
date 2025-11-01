@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0d0d0d;
+      color: white;
+      text-align: center;
+      padding: 50px;
+    }
+    button {
+      margin: 10px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .open { background: #4CAF50; color: white; }
+    .maintenance { background: #f44336; color: white; }
+  </style>
+</head>
+<body>
+  <h1>🛠️ Admin Dashboard</h1>
+  <p>Ubah status website:</p>
+  <button class="open" onclick="updateStatus('open')">Buka Website</button>
+  <button class="maintenance" onclick="updateStatus('maintenance')">Tutup (Maintenance)</button>
+
+  <script>
+    if (!localStorage.getItem('admin')) {
+      window.location.href = 'login.html';
+    }
+
+    async function updateStatus(status) {
+      const message = status === 'open'
+        ? 'Website aktif 🚀'
+        : 'Website sedang diperbaiki, mohon tunggu ya!';
+      
+      const config = { status, message };
+
+      // Simpan ke config.json (Vercel / GitHub butuh API / server-side untuk ini)
+      console.log(config);
+      alert(`Status diubah ke: ${status}`);
+    }
+  </script>
+</body>
+</html>
