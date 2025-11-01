@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RNMD Admin Panel</title>
+  <title>RNMD Admin Dashboard</title>
   <style>
     body {
       background: #0d0d10;
@@ -21,6 +21,7 @@
       padding: 25px;
       border-radius: 14px;
       width: 330px;
+      box-shadow: 0 0 15px rgba(255,255,255,0.05);
     }
     input, textarea {
       width: 90%;
@@ -49,7 +50,7 @@
 </head>
 <body>
 
-  <h2>RNMD Admin Panel 🔐</h2>
+  <h2>RNMD Admin Dashboard 🔐</h2>
 
   <!-- Login -->
   <div class="box" id="loginBox">
@@ -72,8 +73,8 @@
   </div>
 
   <script>
-    const PASSWORD = "rnmdadmin"; // ubah sesuai keinginan lo
-    const CONFIG_PATH = "config.json"; // file config di repo ini
+    const PASSWORD = "rnmdadmin"; // ubah password lo
+    const CONFIG_PATH = "config.json"; // file config di folder ini
 
     // === Login ===
     function login() {
@@ -100,10 +101,10 @@
       document.getElementById("dashboardBox").style.display = "block";
     }
 
-    // === Update Status (Simulasi GitHub Update) ===
+    // === Update Status (Simulasi) ===
     function setStatus(status) {
       const msg = document.getElementById("message").value;
-      alert(`Status diubah jadi "${status}"\nPesan: "${msg}"\n\nKalau udah dihubungin ke API, ini bakal update config.json otomatis!`);
+      alert(`Status diubah jadi "${status}"\nPesan: "${msg}"\n\nKalau udah dihubungin ke API, ini bakal update config.json otomatis.`);
     }
 
     function saveMessage() {
